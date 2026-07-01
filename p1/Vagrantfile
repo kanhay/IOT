@@ -1,0 +1,53 @@
+Vagrant.configure("2") do |config|
+  
+  # Use Vagrant Configuration Version 2
+  # do |config| : Think of it as opening a configuration block
+
+  SERVER_NAME = "khanhayfS"
+  SERVER_IP = "192.168.56.110"
+
+  WORKER_NAME = "khanhayfSW"
+  WORKER_IP = "192.168.56.111"
+
+
+  # Shared settings between vms
+  # define which OS image vagrant will use
+  config.vm.box = "debian/bookworm64"
+  # config.vm.box = "ubuntu/jammy64"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.memory = 512
+    vb.cpus = 1
+  end
+
+  # Server
+  # define = create VM named khanhayf
+  config.vm.define SERVER_NAME do |server|
+      # sets the Linux hostname
+      server.vm.hostname = SERVER_NAME
+
+      # create a network with a static IP addr bc the worker needs to connect to it
+      server.vm.network "private_network",
+        ip: SERVER_IP
+      # This creates the Host-only adapter automatically
+
+      # run these script when VM starts (Provisioning). after booting run this script to install k3s and create the token for the worker to join the cluster
+      server.vm.provision "shell",
+       path: "scripts/server.sh"
+    end
+
+
+    # Server Worker
+    config.vm.define WORKER_NAME do |worker|
+      worker.vm.hostname = WORKER_NAME
+
+      worker.vm.network "private_network",
+       ip: WORKER_IP
+
+      worker.vm.provision "shell",
+       path: "scripts/worker.sh" 
+      
+    end
+end
+
+
