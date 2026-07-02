@@ -1,4 +1,4 @@
-
+# ENV['VAGRANT_NO_PARALLEL'] = 'yes'
 SERVER_NAME = "khanhayfS"
 SERVER_IP = "192.168.56.110"
 
