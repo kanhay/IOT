@@ -15,7 +15,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "debian/bookworm64"
 
   config.vm.provider "virtualbox" do |vb|
-    vb.memory = 1024
+    vb.memory = 1536
     vb.cpus = 1
   end
 
@@ -35,7 +35,6 @@ Vagrant.configure("2") do |config|
        path: "scripts/server.sh"
     end
 
-
     # Server Worker
     config.vm.define WORKER_NAME do |worker|
       worker.vm.hostname = WORKER_NAME
@@ -48,5 +47,3 @@ Vagrant.configure("2") do |config|
       
     end
 end
-
-

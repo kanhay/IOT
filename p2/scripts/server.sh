@@ -4,7 +4,11 @@ set -eu
 IP="$1"
 IFACE=$(ip -4 -o addr show | awk -v ip="$IP" '$4 ~ ip {print $2}') #Finding the interface
 
-# export DEBIAN_FRONTEND=noninteractive
+if [ -z "$IFACE" ]; then
+    echo "Could not determine network interface for $IP"
+    exit 1
+fi
+
 apt-get update -y
 apt-get install -y curl
 
@@ -24,6 +28,5 @@ mkdir -p /var/lib/rancher/k3s/server/manifests
 cp /vagrant/confs/*.yaml /var/lib/rancher/k3s/server/manifests/
 
 echo "Waiting for node to become Ready..."
-until kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml get nodes | grep -q " Ready"; do
-    sleep 2
-done
+kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml wait \
+    --for=condition=Ready node --all --timeout=180s
