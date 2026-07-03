@@ -9,9 +9,9 @@ set -ex
 ###############################################################################
 
 IP="192.168.56.110"
-CONFIG="/etc/rancher/k3s/k3s.yaml"
 TOKEN="/var/lib/rancher/k3s/server/node-token"
-KUBECONFIG="/home/vagrant/.kube/config"
+# CONFIG="/etc/rancher/k3s/k3s.yaml"
+# KUBECONFIG="/home/vagrant/.kube/config"
 
 ###############################################################################
 # Detect the private network interface
@@ -19,12 +19,12 @@ KUBECONFIG="/home/vagrant/.kube/config"
 
 # Find the interface that owns the server's private IP.
 # K3s will use this interface for the overlay network (Flannel).
-IFACE=$(ip -4 -o addr show | awk -v ip="$IP" '$4 ~ ip {print $2}')
+# IFACE=$(ip -4 -o addr show | awk -v ip="$IP" '$4 ~ ip {print $2}')
 
-if [ -z "$IFACE" ]; then
-    echo "Could not determine the network interface for $IP"
-    exit 1
-fi
+# if [ -z "$IFACE" ]; then
+#     echo "Could not determine the network interface for $IP"
+#     exit 1
+# fi
 
 ###############################################################################
 # Install required packages
@@ -39,9 +39,9 @@ apt-get install -y curl
 
 curl -sfL https://get.k3s.io | sh -s - server \
     --node-ip="$IP" \
-    --flannel-iface="$IFACE" \
-    --bind-address="$IP" \
     --write-kubeconfig-mode=644
+    # --flannel-iface="$IFACE" \
+    # --bind-address="$IP" \
 
 # Wait until the API server responds.
 until kubectl get nodes >/dev/null 2>&1
@@ -59,11 +59,11 @@ mkdir -p /vagrant/confs
 cp "$TOKEN" /vagrant/confs/node-token
 
 # Copy the kubeconfig for the vagrant user.
-mkdir -p /home/vagrant/.kube
-cp "$CONFIG" "$KUBECONFIG"
+# mkdir -p /home/vagrant/.kube
+# cp "$CONFIG" "$KUBECONFIG"
 
 # Replace localhost with the server IP so kubectl works from outside localhost.
-sed -i "s/127.0.0.1/$IP/g" "$KUBECONFIG"
+# sed -i "s/127.0.0.1/$IP/g" "$KUBECONFIG"
 
 # Give ownership to the vagrant user.
-chown -R vagrant:vagrant /home/vagrant/.kube
+# chown -R vagrant:vagrant /home/vagrant/.kube

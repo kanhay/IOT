@@ -38,12 +38,12 @@ TOKEN=$(cat "$TOKEN_FILE")
 
 # Find the interface that owns the worker's private IP.
 # K3s will use this interface for the overlay network (Flannel).
-IFACE=$(ip -4 -o addr show | awk -v ip="$IP" '$4 ~ ip {print $2}')
+# IFACE=$(ip -4 -o addr show | awk -v ip="$IP" '$4 ~ ip {print $2}')
 
-if [ -z "$IFACE" ]; then
-    echo "Could not determine the network interface for $IP"
-    exit 1
-fi
+# if [ -z "$IFACE" ]; then
+#     echo "Could not determine the network interface for $IP"
+#     exit 1
+# fi
 
 ###############################################################################
 # Install and start the K3s agent
@@ -54,4 +54,4 @@ K3S_URL="https://$SERVER_IP:6443" \
 K3S_TOKEN="$TOKEN" \
 sh -s - agent \
     --node-ip="$IP" \
-    --flannel-iface="$IFACE"
+    # --flannel-iface="$IFACE"
