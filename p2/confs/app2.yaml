@@ -16,7 +16,7 @@ spec:
         - name: app2
           image: hashicorp/http-echo
           args:
-            - "-text=Hello from app2"
+            - "-text=Hello my friend, I am app2"
           ports:
             - containerPort: 5678
 ---

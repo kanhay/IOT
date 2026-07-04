@@ -1,32 +1,38 @@
 #!/usr/bin/env bash
-set -eu
+
+###############################################################################
+# Configuration
+###############################################################################
 
 IP="$1"
-IFACE=$(ip -4 -o addr show | awk -v ip="$IP" '$4 ~ ip {print $2}') #Finding the interface
 
-if [ -z "$IFACE" ]; then
-    echo "Could not determine network interface for $IP"
-    exit 1
-fi
+# Find the network interface that owns the server's private IP.
+# K3s will use this interface for the overlay network (Flannel).
+# IFACE=$(ip -4 -o addr show | awk -v ip="$IP" '$4 ~ ip {print $2}')
 
-apt-get update -y
+# if [ -z "$IFACE" ]; then
+#     echo "Could not determine the network interface for $IP"
+#     exit 1
+# fi
+
+
+apt-get update
 apt-get install -y curl
 
+# Install K3s server
 curl -sfL https://get.k3s.io | sh -s - server \
     --node-ip="$IP" \
-    --flannel-iface="$IFACE" \
     --write-kubeconfig-mode=644
+    # --flannel-iface="$IFACE" \
 
-mkdir -p /home/vagrant/.kube
-cp /etc/rancher/k3s/k3s.yaml /home/vagrant/.kube/config
-sed -i "s/127.0.0.1/$IP/" /home/vagrant/.kube/config #Replacing localhost
-chown -R vagrant:vagrant /home/vagrant/.kube
-echo "export KUBECONFIG=/home/vagrant/.kube/config" >> /home/vagrant/.bashrc
+# Wait until the control plane is ready
+echo "Waiting for the K3s server to become Ready..."
+kubectl wait \
+    --for=condition=Ready \
+    node \
+    --all \
+    --timeout=180s
 
-# K3s auto-applies anything dropped here, and keeps it in sync
-mkdir -p /var/lib/rancher/k3s/server/manifests
-cp /vagrant/confs/*.yaml /var/lib/rancher/k3s/server/manifests/
-
-echo "Waiting for node to become Ready..."
-kubectl --kubeconfig=/etc/rancher/k3s/k3s.yaml wait \
-    --for=condition=Ready node --all --timeout=180s
+echo
+echo "K3s server is ready."
+kubectl get nodes

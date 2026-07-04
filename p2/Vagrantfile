@@ -1,25 +1,27 @@
-# -*- mode: ruby -*-
-# vi: set ft=ruby :
-
+# BOX = "ubuntu/focal64"
+BOX = "debian/bookworm64"
 SERVER_IP   = "192.168.56.110"
 SERVER_NAME = "khanhayfS"
 
 Vagrant.configure("2") do |config|
-  config.vm.box = "debian/bookworm64"
-  config.vm.box_check_update = false
+  config.vm.box = BOX
+  
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = SERVER_NAME
+    vb.memory = 2048
+    vb.cpus   = 1
+  end
 
   config.vm.define SERVER_NAME do |server|
     server.vm.hostname = SERVER_NAME
     server.vm.network "private_network", ip: SERVER_IP
-    server.vm.provider "virtualbox" do |vb|
-      vb.name   = SERVER_NAME
-      vb.memory = 2048
-      vb.cpus   = 1
-    end
 
     # confs/ becomes available on the VM at /vagrant/confs
     server.vm.provision "shell",
       path: "scripts/server.sh",
       args: [SERVER_IP]
+    
+    server.vm.provision "shell",
+      path: "scripts/deploy.sh"
   end
 end
