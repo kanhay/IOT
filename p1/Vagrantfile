@@ -4,22 +4,21 @@ SERVER_IP = "192.168.56.110"
 WORKER_NAME = "khanhayfSW"
 WORKER_IP = "192.168.56.111"
 
+# Use Vagrant Configuration Version 2
 Vagrant.configure("2") do |config|
-  
-  # Use Vagrant Configuration Version 2
-  # do |config| : Think of it as opening a configuration block
 
   # Shared settings between vms
+  # wait for the VM to boot up for 10 minutes before timing out
+  config.vm.boot_timeout = 600
   # define which OS image vagrant will use
   config.vm.box = "debian/bookworm64"
-
+  # define the resources for the VM
   config.vm.provider "virtualbox" do |vb|
     vb.memory = 2048
     vb.cpus = 1
   end
 
-  # Server
-  # define = create VM named khanhayf
+  # create a VM for the server node
   config.vm.define SERVER_NAME do |server|
       # sets the Linux hostname
       server.vm.hostname = SERVER_NAME

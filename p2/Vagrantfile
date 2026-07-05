@@ -4,6 +4,7 @@ SERVER_IP   = "192.168.56.110"
 SERVER_NAME = "khanhayfS"
 
 Vagrant.configure("2") do |config|
+  config.vm.boot_timeout = 600
   config.vm.box = BOX
   
   config.vm.provider "virtualbox" do |vb|

@@ -2,7 +2,10 @@
 
 # Deploy the Kubernetes resources
 # Apply every manifest found in the shared configuration directory.
-kubectl apply -f /vagrant/confs
+kubectl apply -f /vagrant/confs/app1.yaml
+kubectl apply -f /vagrant/confs/app2.yaml
+kubectl apply -f /vagrant/confs/app3.yaml
+kubectl apply -f /vagrant/confs/ingress.yaml
 
 # Wait for the applications to become ready
 echo "Waiting for all Pods to become Ready..."
